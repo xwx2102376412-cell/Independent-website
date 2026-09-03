@@ -1,0 +1,2 @@
+import { InquiryForm } from "@/components/inquiry-form";
+export default function WholesalePage() { return <main className="shell py-16"><p className="eyebrow text-[var(--accent)]">Fleet and wholesale</p><h1 className="display mt-4 max-w-3xl text-5xl sm:text-6xl">EQUIP THE WHOLE CREW.</h1><p className="mt-6 max-w-2xl text-lg leading-7 text-[var(--muted)]">Request sample fleet pricing for delivery, hospitality, rental, or employee transportation programs.</p><InquiryForm type="WHOLESALE" /></main>; }

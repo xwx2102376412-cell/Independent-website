@@ -1,0 +1,9 @@
+import { notFound } from "next/navigation";
+const content: Record<string, [string, string[]]> = {
+  shipping: ["Shipping", ["Sample delivery is limited to the contiguous 48 United States.", "Orders at or above $1,500 ship free. Smaller orders use a $99 sample flat rate.", "Lithium battery carrier acceptance, dangerous goods paperwork, and final delivery promises must be verified before launch."]],
+  warranty: ["Warranty", ["This page contains development copy only and is not a binding warranty.", "Final coverage, exclusions, labor policy, and claim handling require legal and operational approval."]],
+  returns: ["Returns", ["This sample policy does not authorize real returns.", "Return windows, battery handling, restocking fees, return freight, and state consumer rights require review before launch."]],
+  manuals: ["Manuals", ["Product manuals are not available because all three bikes are fictional demo products.", "Validated assembly, charging, maintenance, and safety manuals are required before commercial use."]],
+  faq: ["Frequently asked questions", ["Range values are fictional sample claims and vary with rider weight, weather, terrain, tire pressure, and assist level.", "Charging and battery storage instructions must come from the final certified battery supplier.", "A local bicycle professional should perform final assembly and a safety inspection."]],
+};
+export default async function TopicPage({ params }: { params: Promise<{ topic: string }> }) { const item = content[(await params).topic]; if (!item) notFound(); return <main className="shell py-16"><h1 className="display text-5xl">{item[0].toUpperCase()}</h1><div className="mt-10 max-w-3xl rounded-xl border border-[var(--line)] bg-[var(--surface)] p-7">{item[1].map(text => <p className="mb-5 last:mb-0 leading-7 text-[var(--muted)]" key={text}>{text}</p>)}</div></main>; }

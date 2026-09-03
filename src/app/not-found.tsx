@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function NotFound() { return <main className="shell flex min-h-[60dvh] flex-col items-start justify-center py-16"><p className="eyebrow text-[var(--accent)]">Route not found</p><h1 className="display mt-4 text-6xl">WRONG TURN.</h1><p className="mt-5 text-[var(--muted)]">The page or order could not be found.</p><Link href="/" className="focus-ring mt-8 rounded-lg bg-[var(--accent)] px-6 py-4 font-black text-[#171819]">Return home</Link></main>; }

@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MarketCode {
+  US
+  EU
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  PAID
+  CANCELLED
+  FULFILLED
+  REFUNDED
+}
+
+enum InquiryType {
+  DEALER
+  WHOLESALE
+  CONTACT
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  QUOTED
+  NEGOTIATING
+  WON
+  LOST
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  slug           String          @unique
+  tagline        String
+  description    String          @db.Text
+  imageUrl       String
+  status         ProductStatus   @default(DRAFT)
+  featured       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  marketVersions MarketVersion[]
+}
+
+model MarketVersion {
+  id          String     @id @default(cuid())
+  productId   String
+  market      MarketCode
+  currency    String
+  basePrice   Int
+  motorWatts  Int
+  speedMph    Int
+  rangeMiles  Int
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variants    Variant[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([productId, market])
+  @@index([market])
+}
+
+model Variant {
+  id              String        @id @default(cuid())
+  marketVersionId String
+  sku             String        @unique
+  color           String
+  colorHex        String
+  batteryWh       Int
+  motorWatts      Int
+  tire            String
+  price            Int
+  active           Boolean       @default(true)
+  marketVersion    MarketVersion @relation(fields: [marketVersionId], references: [id], onDelete: Cascade)
+  inventory        Inventory?
+  orderItems       OrderItem[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([marketVersionId])
+}
+
+model Inventory {
+  id        String   @id @default(cuid())
+  variantId String   @unique
+  onHand    Int      @default(0)
+  reserved  Int      @default(0)
+  variant   Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id                String        @id @default(cuid())
+  orderNumber       String        @unique
+  email             String
+  firstName         String
+  lastName          String
+  phone             String?
+  address1          String
+  address2          String?
+  city              String
+  state             String
+  postalCode        String
+  country           String        @default("US")
+  market            MarketCode    @default(US)
+  currency          String        @default("USD")
+  subtotal          Int
+  shipping          Int
+  tax               Int           @default(0)
+  total             Int
+  status            OrderStatus   @default(PENDING)
+  paypalOrderId     String?       @unique
+  items             OrderItem[]
+  paymentEvents     PaymentEvent[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  variantId   String
+  productName String
+  sku         String
+  optionLabel String
+  unitPrice   Int
+  quantity    Int
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant     Variant @relation(fields: [variantId], references: [id])
+}
+
+model PaymentEvent {
+  id         String   @id @default(cuid())
+  provider   String
+  eventId    String   @unique
+  eventType  String
+  orderId    String?
+  payload    Json
+  processed  Boolean  @default(false)
+  order      Order?   @relation(fields: [orderId], references: [id])
+  receivedAt DateTime @default(now())
+}
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  type             InquiryType
+  status           InquiryStatus @default(NEW)
+  companyName      String?
+  contactName      String
+  country          String
+  email            String
+  phone            String?
+  website          String?
+  businessType     String?
+  expectedQuantity Int?
+  interestedModels String[]
+  message          String        @db.Text
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([type, status])
+}
