@@ -111,3 +111,11 @@ Reading this as: a greenfield US direct-to-consumer e-bike storefront for city c
 
 - 尚未提供 PayPal Sandbox Client ID、Secret 与 Webhook ID，因此支付网络联调保持配置待启用状态。
 - 正式产品、法规、税务、物流、退换货和保修条件尚未确认，禁止开放真实订单。
+
+## 2026-09-07 website-design-analyzer 架构设计 [in_progress]
+范围：仅研究、架构和开发计划。先澄清关键边界，审计当前代码，研究五个仓库，设计数据契约与阶段验收；不实现 Skill。
+
+已确认：通用核心 + E-bike 专项；本地 Node.js/Playwright；MVP 单页完整分析并支持组件限定，多页面 V2。
+
+### website-design-analyzer 架构阶段 [complete]
+已完成项目审计、参考研究、架构/目录/脚本/SKILL 章节/依赖/MVP-V3 计划，停止于文档交付。

@@ -1,6 +1,13 @@
 # RIVET E-BIKES
 
-Local-first US electric bike storefront built with Next.js, TypeScript, Tailwind CSS, Prisma, and PostgreSQL.
+Local-first US electric bike storefront and a separate administration application built with Next.js, TypeScript, Tailwind CSS, Prisma, and PostgreSQL.
+
+The repository contains two independently runnable applications:
+
+- Storefront: repository root, `http://localhost:3000`
+- Admin: `admin-app/`, `http://localhost:3001`
+
+Both applications connect to the same PostgreSQL database. The public storefront does not contain an `/admin` route.
 
 ## Local setup
 
@@ -9,15 +16,20 @@ Local-first US electric bike storefront built with Next.js, TypeScript, Tailwind
 3. Start PostgreSQL: `docker compose up -d postgres`.
 4. Run `npm run db:migrate -- --name init`.
 5. Run `npm run db:seed`.
-6. Run `npm run dev` and open `http://localhost:3000`.
+6. In one PowerShell window, run `npm run dev:storefront` and open `http://localhost:3000`.
+7. In a second PowerShell window, run `npm run dev:admin` and open `http://localhost:3001`.
 
-The storefront uses explicit demo data when `DATABASE_URL` is absent. Database writes, checkout, orders, inquiries, and admin CRUD require PostgreSQL.
+The storefront uses explicit demo data when `DATABASE_URL` is absent. Database writes, checkout, orders, inquiries, and admin operations require PostgreSQL.
 
 ## Admin
 
-Open `http://localhost:3000/admin`. Credentials come from `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+Open `http://localhost:3001`. Credentials come from `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 
-The admin can create and edit products, archive products, update variant stock, manage inquiries, and update non-payment order states. It cannot manually mark an order paid.
+The admin application's Next config loads the repository `.env` for local use. When deploying `admin-app/` independently, configure the variables listed in `admin-app/.env.example` on that deployment instead of sharing an environment file.
+
+The admin can create products as drafts; edit names, slugs, English storefront copy, US pricing, motor, speed, range, and featured state; upload and select product images; manage multiple variants and inventory; and publish, unpublish, or republish products. Storefront requests read current PostgreSQL data, so an admin change appears after the storefront page is refreshed. The admin can also manage inquiries and update non-payment order states. It cannot manually mark an order paid.
+
+Uploaded images are stored in `storage/product-images` by default and served by the storefront through `/api/product-images/[filename]`. `PRODUCT_UPLOAD_DIR` can override that directory. When the two applications are deployed to separate machines, both deployments must use shared persistent storage or this local adapter must be replaced with object storage.
 
 ## PayPal Sandbox
 
@@ -32,7 +44,9 @@ Configure the listener as `/api/paypal/webhook` and subscribe to `PAYMENT.CAPTUR
 
 ## Verification
 
-Run `npm run lint`, `npm run typecheck`, `npm test`, `npx prisma validate`, and `npm run build`.
+Run `npm run lint`, `npm run typecheck`, `npm test`, `npx prisma validate`, and `npm run build`. The default build command builds both applications; use `npm run build:storefront` or `npm run build:admin` to build one application.
+
+Prisma Client is generated during `npm install` through each application's `postinstall` script. Stop running development servers before reinstalling dependencies on Windows so the Prisma query-engine file is not locked.
 
 ## Launch blockers
 

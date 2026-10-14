@@ -1,8 +1,10 @@
+import { connection } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { demoProducts, type StoreProduct } from "@/lib/demo-products";
 
 export async function getProducts(): Promise<StoreProduct[]> {
   if (!process.env.DATABASE_URL) return demoProducts;
+  await connection();
   try {
     const products = await prisma.product.findMany({
       where: { status: "ACTIVE", marketVersions: { some: { market: "US" } } },
@@ -18,6 +20,7 @@ export async function getProducts(): Promise<StoreProduct[]> {
         tagline: product.tagline,
         description: product.description,
         imageUrl: product.imageUrl,
+        imageUrls: product.imageUrls.length > 0 ? product.imageUrls : [product.imageUrl],
         featured: product.featured,
         motorWatts: market.motorWatts,
         speedMph: market.speedMph,

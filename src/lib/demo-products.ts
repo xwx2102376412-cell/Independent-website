@@ -17,6 +17,7 @@ export type StoreProduct = {
   tagline: string;
   description: string;
   imageUrl: string;
+  imageUrls: string[];
   featured: boolean;
   motorWatts: number;
   speedMph: number;
@@ -32,6 +33,7 @@ export const demoProducts: StoreProduct[] = [
     tagline: "The weekday workhorse.",
     description: "A balanced commuter with upright geometry, integrated lights, full fenders, and a rack ready for the daily load.",
     imageUrl: "/images/rivet-hero.png",
+    imageUrls: ["/images/rivet-hero.png"],
     featured: true,
     motorWatts: 500,
     speedMph: 20,
@@ -48,6 +50,7 @@ export const demoProducts: StoreProduct[] = [
     tagline: "More miles. Fewer compromises.",
     description: "A low-step frame, larger battery, and cargo-ready hardware make longer commutes feel straightforward.",
     imageUrl: "/images/rivet-range.png",
+    imageUrls: ["/images/rivet-range.png"],
     featured: true,
     motorWatts: 500,
     speedMph: 20,
@@ -64,6 +67,7 @@ export const demoProducts: StoreProduct[] = [
     tagline: "City armor for rough routes.",
     description: "High-volume tires and a reinforced rack handle broken pavement during the week and loose surfaces on weekends.",
     imageUrl: "/images/rivet-trail.png",
+    imageUrls: ["/images/rivet-trail.png"],
     featured: true,
     motorWatts: 750,
     speedMph: 28,

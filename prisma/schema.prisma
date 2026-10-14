@@ -43,56 +43,194 @@ enum InquiryStatus {
   LOST
 }
 
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model Product {
-  id             String          @id @default(cuid())
-  name           String
-  slug           String          @unique
-  tagline        String
-  description    String          @db.Text
-  imageUrl       String
-  status         ProductStatus   @default(DRAFT)
-  featured       Boolean         @default(false)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  marketVersions MarketVersion[]
+  id              String                 @id @default(cuid())
+  name            String
+  slug            String                 @unique
+  tagline         String
+  description     String                 @db.Text
+  imageUrl        String
+  imageUrls       String[]               @default([])
+  status          ProductStatus          @default(DRAFT)
+  featured        Boolean                @default(false)
+  productType     String                 @default("E_BIKE")
+  categoryId      String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  category        Category?              @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  marketVersions  MarketVersion[]
+  media           ProductMedia[]
+  specifications  ProductSpecification[]
+  options         ProductOption[]
+  variants        Variant[]              @relation("ProductVariants")
+  accessoryLinks  ProductCompatibility[] @relation("AccessoryProduct")
+  compatibleLinks ProductCompatibility[] @relation("CompatibleProduct")
+
+  @@index([categoryId])
+  @@index([productType])
 }
 
 model MarketVersion {
-  id          String     @id @default(cuid())
-  productId   String
-  market      MarketCode
-  currency    String
-  basePrice   Int
-  motorWatts  Int
-  speedMph    Int
-  rangeMiles  Int
-  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variants    Variant[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id             String     @id @default(cuid())
+  productId      String
+  market         MarketCode
+  currency       String
+  basePrice      Int
+  motorWatts     Int
+  speedMph       Int
+  rangeMiles     Int
+  published      Boolean    @default(false)
+  locale         String     @default("en-US")
+  seoTitle       String?
+  seoDescription String?    @db.Text
+  product        Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variants       Variant[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   @@unique([productId, market])
   @@index([market])
 }
 
 model Variant {
-  id              String        @id @default(cuid())
+  id              String               @id @default(cuid())
   marketVersionId String
-  sku             String        @unique
+  productId       String?
+  sku             String               @unique
   color           String
   colorHex        String
   batteryWh       Int
   motorWatts      Int
   tire            String
-  price            Int
-  active           Boolean       @default(true)
-  marketVersion    MarketVersion @relation(fields: [marketVersionId], references: [id], onDelete: Cascade)
-  inventory        Inventory?
-  orderItems       OrderItem[]
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  price           Int
+  active          Boolean              @default(true)
+  marketVersion   MarketVersion        @relation(fields: [marketVersionId], references: [id], onDelete: Cascade)
+  product         Product?             @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
+  inventory       Inventory?
+  orderItems      OrderItem[]
+  prices          VariantPrice[]
+  optionValues    VariantOptionValue[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   @@index([marketVersionId])
+  @@index([productId])
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?    @db.Text
+  parentId    String?
+  parent      Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[] @relation("CategoryTree")
+  products    Product[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([parentId])
+}
+
+model ProductMedia {
+  id        String    @id @default(cuid())
+  productId String
+  type      MediaType @default(IMAGE)
+  url       String
+  altText   String
+  position  Int       @default(0)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([productId, url])
+  @@index([productId, position])
+}
+
+model ProductSpecification {
+  id        String   @id @default(cuid())
+  productId String
+  group     String   @default("General")
+  name      String
+  value     String
+  unit      String?
+  position  Int      @default(0)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, group, name])
+  @@index([productId, position])
+}
+
+model ProductOption {
+  id        String               @id @default(cuid())
+  productId String
+  name      String
+  position  Int                  @default(0)
+  product   Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  values    ProductOptionValue[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@unique([productId, name])
+  @@index([productId, position])
+}
+
+model ProductOptionValue {
+  id        String               @id @default(cuid())
+  optionId  String
+  value     String
+  position  Int                  @default(0)
+  option    ProductOption        @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  variants  VariantOptionValue[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@unique([optionId, value])
+  @@index([optionId, position])
+}
+
+model VariantOptionValue {
+  variantId     String
+  optionValueId String
+  variant       Variant            @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  optionValue   ProductOptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, optionValueId])
+}
+
+model VariantPrice {
+  id             String     @id @default(cuid())
+  variantId      String
+  market         MarketCode
+  currency       String
+  price          Int
+  compareAtPrice Int?
+  active         Boolean    @default(false)
+  variant        Variant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([variantId, market])
+  @@index([market, active])
+}
+
+model ProductCompatibility {
+  id                  String   @id @default(cuid())
+  accessoryProductId  String
+  compatibleProductId String
+  note                String?
+  accessoryProduct    Product  @relation("AccessoryProduct", fields: [accessoryProductId], references: [id], onDelete: Cascade)
+  compatibleProduct   Product  @relation("CompatibleProduct", fields: [compatibleProductId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+
+  @@unique([accessoryProductId, compatibleProductId])
 }
 
 model Inventory {
@@ -105,30 +243,30 @@ model Inventory {
 }
 
 model Order {
-  id                String        @id @default(cuid())
-  orderNumber       String        @unique
-  email             String
-  firstName         String
-  lastName          String
-  phone             String?
-  address1          String
-  address2          String?
-  city              String
-  state             String
-  postalCode        String
-  country           String        @default("US")
-  market            MarketCode    @default(US)
-  currency          String        @default("USD")
-  subtotal          Int
-  shipping          Int
-  tax               Int           @default(0)
-  total             Int
-  status            OrderStatus   @default(PENDING)
-  paypalOrderId     String?       @unique
-  items             OrderItem[]
-  paymentEvents     PaymentEvent[]
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id            String         @id @default(cuid())
+  orderNumber   String         @unique
+  email         String
+  firstName     String
+  lastName      String
+  phone         String?
+  address1      String
+  address2      String?
+  city          String
+  state         String
+  postalCode    String
+  country       String         @default("US")
+  market        MarketCode     @default(US)
+  currency      String         @default("USD")
+  subtotal      Int
+  shipping      Int
+  tax           Int            @default(0)
+  total         Int
+  status        OrderStatus    @default(PENDING)
+  paypalOrderId String?        @unique
+  items         OrderItem[]
+  paymentEvents PaymentEvent[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([email])
   @@index([status])
@@ -177,4 +315,60 @@ model Inquiry {
   updatedAt        DateTime      @updatedAt
 
   @@index([type, status])
+}
+
+model AdminRole {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  name        String
+  permissions String[]    @default([])
+  users       AdminUser[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model AdminUser {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  name         String
+  active       Boolean        @default(true)
+  passwordHash String?
+  roleId       String
+  role         AdminRole      @relation(fields: [roleId], references: [id])
+  sessions     AdminSession[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([roleId, active])
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  adminUserId String
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  lastSeenAt  DateTime  @default(now())
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId, expiresAt])
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  actorId    String?
+  actorEmail String
+  action     String
+  entityType String
+  entityId   String?
+  summary    String
+  before     Json?
+  after      Json?
+  actor      AdminUser? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt  DateTime   @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
 }

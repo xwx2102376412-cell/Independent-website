@@ -1,8 +1,10 @@
 node_modules/
 .next/
+admin-app/.next/
 .env
 .env.local
 coverage/
 *.log
 *.tsbuildinfo
 prisma/dev.db
+storage/product-images/*

@@ -32,3 +32,10 @@
 - 核对订单金额：subtotal 149900、shipping 9900、tax 0、total 159800，状态 PENDING，库存 reserved 增加 1。
 - 核对首页、商品、购物车、结账、订单、后台登录与 sitemap 均返回 HTTP 200。
 - PostgreSQL 接入后再次完成 lint、TypeScript、5 项测试与生产构建，全部通过。
+
+## 2026-09-07 website-design-analyzer
+已读取 Skill 创建规范、项目规划与文件清单；正在澄清复用范围、浏览器方式、MVP 页面范围。
+
+- 完成五个仓库 README/Skill/关键源码研究与当前项目静态审计。
+- 用户确认通用核心加 E-bike、本地 Playwright、MVP 单页。
+- 已交付 WEBSITE_DESIGN_ANALYZER_ARCHITECTURE.md，未安装依赖、未创建 Skill、未改应用代码；未做运行时 QA。

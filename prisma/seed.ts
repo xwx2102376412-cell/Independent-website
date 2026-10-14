@@ -14,6 +14,7 @@ async function main() {
         tagline: item.tagline,
         description: item.description,
         imageUrl: item.imageUrl,
+        imageUrls: [item.imageUrl],
         featured: item.featured,
         status: "ACTIVE",
         marketVersions: {

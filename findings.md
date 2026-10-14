@@ -28,3 +28,10 @@
 - 城市通勤价值主张与硬朗户外视觉结合。
 - 避免纯越野叙事，重点表达耐用、全天候、通勤负载和日常可靠性。
 - 首页采用非对称产品摄影构图，不使用通用三等分卡片和模板化渐变。
+
+## 2026-09-07 Skill 架构研究
+当前项目采用 src/app 与 src/components；globals.css 使用 Tailwind CSS 导入及明暗 CSS 变量。历史初始环境描述已过时，以当前代码为准。五个参考仓库网页均可访问，待核对实现。
+
+参考实现核对：Mahanaicoach responsive.mjs 按三尺寸批量测量，section.mjs 使用 DOM walk 与状态差异；url-style-extractor extract.py 使用可见元素面积加权，默认 1440x900；billhector auditor 是文件发现与主题生成指令。网页缓存读取部分源码失败，普通网络受限，已获自动审核允许只读获取公开源码。
+
+最终架构结论：确定性采集 + Codex 语义适配；实测/声明/推断/建议分层；三个 viewport 不等于全部断点；当前 Hero 内嵌 page.tsx，商品卡已为 4:3。完整方案见 WEBSITE_DESIGN_ANALYZER_ARCHITECTURE.md。参考仓库只做静态源码研究，未运行。
