@@ -39,3 +39,25 @@
 - 完成五个仓库 README/Skill/关键源码研究与当前项目静态审计。
 - 用户确认通用核心加 E-bike、本地 Playwright、MVP 单页。
 - 已交付 WEBSITE_DESIGN_ANALYZER_ARCHITECTURE.md，未安装依赖、未创建 Skill、未改应用代码；未做运行时 QA。
+
+## 2026-10-15 前台顾客账户与数据库购物车
+
+- 完成只读代码审计：确认现有前台为 localStorage 购物车、访客结账、PENDING 订单和可选 PayPal 链路；确认后台管理员认证不可复用为前台顾客认证。
+- 用户确认：登录后才能下单、邮箱+密码注册、模拟购买成功、需要账户和订单历史、购物车迁移数据库并跨设备同步。
+- 当前阶段：Phase 8，准备实现数据库模型、认证会话、数据库购物车、模拟结算和账户页面。
+- 完成 Prisma `20261015054502_customer_accounts_cart` 迁移，新增 Customer、CustomerSession、Cart、CartItem，并为 Order 增加可关联顾客字段。
+- 完成邮箱+密码注册/登录/退出，会话使用随机 Token 的 SHA-256 数据库记录和 httpOnly Cookie；未登录结算与订单页会跳转登录。
+- 完成数据库购物车 API 与 localStorage 首次登录合并，已用两个独立会话验证跨设备读取同一数量。
+- 完成模拟购买：服务端读取数据库购物车，Serializable 事务校验价格/库存，订单直接创建为 PAID、扣减 onHand、清空购物车。
+- 完成 `/account`、`/account/orders` 与顾客订单详情访问控制。
+- 验证通过：`npm run lint`、`npm run typecheck`、`npm test`（5 项）、`npm run build:storefront`、`prisma validate`、`prisma migrate status`，以及本地 HTTP 注册/登录/购物车/下单闭环。
+
+## 2026-10-16 TUKEN OX 视觉升级
+
+- 完成现有首页、导航、页脚、商品卡、商品详情、购物车、结算、登录和账户页面的视觉审计。
+- 确定“Monochrome Electric Machine”方向：黑白机械骨架、电能黄绿强调、斜切几何、仪表编号。
+- 当前阶段：Phase 9，开始更新共享视觉令牌和关键购买页面。
+- 完成全站共享令牌、页头页脚、首页、商品列表与详情、比较、购物车、结算、登录注册、账户订单、支持内容和询盘表单的视觉升级。
+- 品牌前台称谓与 PayPal 配置品牌名统一为 TUKEN OX，保留既有数据库、认证、购物车和订单逻辑。
+- 浏览器实测移动端首页、商品详情和登录页，Logo、斜切面板、标题、按钮与表单显示正常。
+- 最终验证通过：lint、storefront/admin TypeScript、5 项测试和 Next.js 生产构建；禁用长破折号与旧 RIVET 前台文案扫描为零。

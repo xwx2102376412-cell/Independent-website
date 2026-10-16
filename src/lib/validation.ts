@@ -3,7 +3,6 @@ import { z } from "zod";
 export const cartItemSchema = z.object({ variantId: z.string().min(1), market: z.literal("US"), quantity: z.number().int().min(1).max(5) });
 
 export const checkoutSchema = z.object({
-  email: z.string().email(),
   firstName: z.string().min(1).max(80),
   lastName: z.string().min(1).max(80),
   phone: z.string().max(30).optional(),
@@ -12,7 +11,11 @@ export const checkoutSchema = z.object({
   city: z.string().min(2).max(80),
   state: z.string().length(2),
   postalCode: z.string().regex(/^\d{5}(-\d{4})?$/),
-  items: z.array(cartItemSchema).min(1),
+});
+
+export const customerCredentialsSchema = z.object({
+  email: z.string().email().max(254),
+  password: z.string().min(8).max(128),
 });
 
 export const inquirySchema = z.object({

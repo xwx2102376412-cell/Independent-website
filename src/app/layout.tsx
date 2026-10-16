@@ -7,8 +7,8 @@ import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "RIVET E-BIKES | Built Tough for the Daily Ride", template: "%s | RIVET E-BIKES" },
-  description: "Rugged electric bikes engineered for American city commutes.",
+  title: { default: "TUKEN OX | Electric Machines for the City", template: "%s | TUKEN OX" },
+  description: "Electric bicycles engineered with motorcycle attitude for the modern city.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

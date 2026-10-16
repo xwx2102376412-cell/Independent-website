@@ -1,5 +1,7 @@
 node_modules/
 .next/
+/.public-demo/
+/tools/cloudflared.exe
 admin-app/.next/
 .env
 .env.local

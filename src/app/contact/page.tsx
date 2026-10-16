@@ -1,2 +1,2 @@
 import { InquiryForm } from "@/components/inquiry-form";
-export default function ContactPage() { return <main className="shell py-16"><h1 className="display text-5xl sm:text-6xl">TALK TO RIVET.</h1><p className="mt-6 max-w-2xl text-lg text-[var(--muted)]">Questions about sample products, service, or this local development build.</p><InquiryForm type="CONTACT" /></main>; }
+export default function ContactPage() { return <main className="shell py-16"><p className="eyebrow text-[var(--accent)]">Contact channel</p><h1 className="display mt-5 text-6xl sm:text-8xl">TALK TO TUKEN OX.</h1><p className="mt-6 max-w-2xl text-lg text-[var(--muted)]">Questions about sample products, service, or this local development build.</p><InquiryForm type="CONTACT" /></main>; }
